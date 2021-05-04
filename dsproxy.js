@@ -22,6 +22,8 @@ var DsObject = class {
 			Ds.CreateObject(args.name, args.class);
 		}
 	
+		this.refs = {};
+	
 		const proxy =  new Proxy(this, {
 			get: function(obj, prop, receiver) {
 				if (obj.hasOwnProperty(prop)) {
@@ -79,12 +81,15 @@ var DsObject = class {
 					}
 				}
 			
-				let result = Ds.GetObjectAttr(obj['name'], prop);
+				obj.refs[prop] = obj.refs[prop] || Ds.NewObjectAttrRef(obj['name'], prop);
+			
+				let result = Ds.GetObjectAttrUsingRef(obj.refs[prop]);
 				
-				if (result == undefined) {
+				if (result === undefined) {				
 					result = () => { 
 						Ds.ExecuteObjectCommand(obj['name'], prop);
 					}
+					obj[prop] = result;
 				}
 				
 				return result;
@@ -92,11 +97,13 @@ var DsObject = class {
 			set: function(obj, prop, value) {
 				let controller;
 			
-				if (value.duration != undefined) {
+				if (value.duration !== undefined) {
 					controller = Ds.NewObjectAttrController(value.duration, value.up || 0.0, value.down || 0.0, value.func || 'linear', value.rate || false, value.step || false);
 				}
 			
-				Ds.SetObjectAttr(obj['name'], prop, value, controller);
+				obj.refs[prop] = obj.refs[prop] || Ds.NewObjectAttrRef(obj['name'], prop);
+				
+				Ds.SetObjectAttrUsingRef(obj.refs[prop], value, controller);
 			}
 		});
 		
