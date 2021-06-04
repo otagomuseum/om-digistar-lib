@@ -70,12 +70,16 @@ var DsObject = class {
 						for (let i = 0; i < props.length; i++) {
 							let prop = props[i];
 
-							if (prop == 'class' || prop == 'name' || prop == 'duration') {
+							if (prop == 'class' || prop == 'name' || prop == 'duration' ) {
 								continue;
 							}
 							
-							Ds.SetObjectAttr(obj['name'], prop, params[prop], controller);
-
+							try {
+								Ds.SetObjectAttr(obj['name'], prop, params[prop], controller);
+							} catch (ex) {
+								print(`Error setting attribute: ${prop}`);
+							}
+							
 							this[prop] = params[prop];
 						}
 					}
@@ -83,9 +87,11 @@ var DsObject = class {
 			
 				obj.refs[prop] = obj.refs[prop] || Ds.NewObjectAttrRef(obj['name'], prop);
 			
-				let result = Ds.GetObjectAttrUsingRef(obj.refs[prop]);
+				let result;
 				
-				if (result === undefined) {				
+				try {
+				   result = Ds.GetObjectAttrUsingRef(obj.refs[prop]);
+				} catch (ex) {			
 					result = () => { 
 						Ds.ExecuteObjectCommand(obj['name'], prop);
 					}
