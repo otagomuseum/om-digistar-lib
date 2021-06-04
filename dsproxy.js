@@ -70,7 +70,7 @@ var DsObject = class {
 						for (let i = 0; i < props.length; i++) {
 							let prop = props[i];
 
-							if (prop == 'class' || prop == 'name') {
+							if (prop == 'class' || prop == 'name' || prop == 'duration') {
 								continue;
 							}
 							
