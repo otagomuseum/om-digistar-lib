@@ -1,7 +1,7 @@
 ﻿// Digistar Script 
 // Created: 03/05/2021
 
-include('$content/user/lib/dsproxy.js');
+include('$content/user/om-digistar-lib/dsproxy.js');
 
 // Get a reference to exisiting objects
 let scene = new DsObject('scene');
