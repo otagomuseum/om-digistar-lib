@@ -117,4 +117,9 @@ var DsObject = class {
 		
 		return proxy;
 	}
+	
+	static clone(name, toCopy) {
+		const obj = Ds.CloneObject(name, toCopy);
+		return new this(name);
+	}
 };
