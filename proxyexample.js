@@ -4,11 +4,11 @@
 include('$content/user/om-digistar-lib/dsproxy.js');
 
 // Get a reference to exisiting objects
-let scene = new DsObject('scene');
-let skyObjects = new DsObject('skyObjects');
-let Earth = new DsObject('Earth');
-let sky = new DsObject('sky');
-let nav = new DsObject('navigation');
+let scene = DsObject.get('scene');
+let skyObjects = DsObject.get('skyObjects');
+let Earth =  DsObject.get('Earth');
+let sky =  DsObject.get('sky');
+let nav =  DsObject.get('navigation');
 
 // Create a new object by specifying the class
 let empty = new DsObject('myEmpty', 'EmptyClass');
@@ -20,6 +20,10 @@ let empty2 = new DsObject({
 	position: {x: 1, y: 1, z: 50}
 });
 
+Ds.Wait(0.1); // clone needs the creation of previous object to be finished 
+
+let empty3 = DsObject.clone('myEmpty3', 'myEmpty2');
+
 // Object hierarchy
 scene.add(empty);
 empty.add(empty2);
@@ -28,7 +32,7 @@ empty.add(empty2);
 sky.on(0);
 skyObjects.on({ duration: 0 });
 
-Ds.Wait(5)
+Ds.Wait(5);
 
 // Use JSON.stringify to log
 console.log(JSON.stringify(Earth.oceanColor));
@@ -37,7 +41,7 @@ console.log(JSON.stringify(empty2.position));
 
 nav.set({
 	destObject: 'Earth',
-	flyToDuration: 5,
+	flyToDuration: 5
 });
 
 nav.flyToDest();

@@ -24,7 +24,7 @@ var DsObject = class {
 	
 		this.refs = {};
 	
-		const proxy =  new Proxy(this, {
+		const proxy = new Proxy(this, {
 			get: function(obj, prop, receiver) {
 				if (obj.hasOwnProperty(prop)) {
 					return obj[prop];
@@ -85,17 +85,27 @@ var DsObject = class {
 					}
 				}
 			
+				let result;
+			
 				obj.refs[prop] = obj.refs[prop] || Ds.NewObjectAttrRef(obj['name'], prop);
 			
-				let result;
+				let index = Ds.GetAttrRefIndex(obj.refs[prop]); // returns -1 if not an attribute
+
+				if (index >= 0) {
+					return Ds.GetObjectAttrUsingRef(obj.refs[prop]);
+				}
+				
+				obj.refs[prop] = Ds.NewObjectCommandRef(obj['name'], prop);
 				
 				try {
-				   result = Ds.GetObjectAttrUsingRef(obj.refs[prop]);
-				} catch (ex) {			
+					index = Ds.GetCommandRefIndex(obj.refs[prop]); // throws error if not a command
+					
 					result = () => { 
-						Ds.ExecuteObjectCommand(obj['name'], prop);
+						Ds.ExecuteObjectCommandUsingRef(obj.refs[prop], prop);
 					}
 					obj[prop] = result;
+				} catch (ex) {
+					Ds.SendMessageError(`No such property or command: ${prop}`);
 				}
 				
 				return result;
@@ -116,6 +126,14 @@ var DsObject = class {
 		proxy.set(args);
 		
 		return proxy;
+	}
+	
+	static get(name) {
+		return new this(name);
+	}
+	
+	static create(name, className) {
+		return new this(name, className);
 	}
 	
 	static clone(name, toCopy) {
