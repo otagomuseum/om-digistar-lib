@@ -1,6 +1,32 @@
 ﻿// Digistar Script 
 // Created: 03/05/2021
 
+const units = {
+"MET":1,
+"KIL":1000,
+"MIL":1609.344,
+"NAU":1852,
+"AST":149597870700,
+"LIG":9460730472580000,
+"PAR":30856775812800000,
+"MEG":3.08567758128e+22,
+"RSU":696000000,
+"RMO":1737400,
+"RME":2439700,
+"RVE":6051800,
+"REA":6378140,
+"RMA":3397000,
+"RJU":71492000,
+"RSA":60268000,
+"RUR":25559000,
+"RNE":24764000,
+"RPL":1195000
+};
+
+var ToMeters = function(dist) {
+	return dist.distance * units[dist.units];
+}
+
 var DsObject = class {
 	constructor() {
 		let args = arguments[0];
@@ -28,6 +54,11 @@ var DsObject = class {
 			get: function(obj, prop, receiver) {
 				if (obj.hasOwnProperty(prop)) {
 					return obj[prop];
+				}
+				
+				if (prop === 'class') {
+					const classID = Ds.GetObjectClassID(args.name);
+					return Ds.GetClassName(classID);
 				}
 				
 				if (prop === 'add') {
