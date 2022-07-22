@@ -143,14 +143,19 @@ var DsObject = class {
 			},
 			set: function(obj, prop, value) {
 				let controller;
-			
-				if (value.duration !== undefined) {
-					controller = Ds.NewObjectAttrController(value.duration, value.up || 0.0, value.down || 0.0, value.func || 'linear', value.rate || false, value.step || false);
+				let val = value;
+
+				if (typeof value == 'object') {
+						if (value.controller !== undefined) {
+							controller = Ds.NewObjectAttrController(value.controller.duration, value.up || 0.0, value.controller.down || 0.0, value.controller.func || 'linear', value.controller.rate || false, value.controller.step || false);
+						}
+
+						val = value.value;
 				}
 			
 				obj.refs[prop] = obj.refs[prop] || Ds.NewObjectAttrRef(obj['name'], prop);
 				
-				Ds.SetObjectAttrUsingRef(obj.refs[prop], value, controller);
+				Ds.SetObjectAttrUsingRef(obj.refs[prop], val, controller);
 			}
 		});
 		
